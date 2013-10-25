@@ -30,6 +30,9 @@
 // user_select=true/false - default is True. If set to false the user will NOT be able to filter the results by date
 // start_date="2013-10-01" - date is in international date format year-month-day so 1st October 1978  = 1978-10-01
 // end_date="2013-10-01" - date is in international date format year-month-day so 1st October 1978  = 1978-10-01
+// current_month="true" - It will display all events for the current month and current year.
+// set_month="10" - numeric, the month of the year, e.g. January = 1, October = 10 -- Please note it will disregard year!!
+
 // by setting the start date events with a start date before that will not appear at all.
 // by setting an end date, events with a start date after that will not appear.
 
@@ -46,6 +49,9 @@ function espresso_custom_template_date_range(){
 	if(isset($ee_attributes['user_select'])) { $user_select = $ee_attributes['user_select']; }
 	if(isset($ee_attributes['start_date'])) { $admin_start_date = strtotime($ee_attributes['start_date']); }
 	if(isset($ee_attributes['end_date'])) { $admin_end_date = strtotime($ee_attributes['end_date']); }
+	if(isset($ee_attributes['current_month'])) { $admin_currentmonth = $ee_attributes['current_month']; }
+	if(isset($ee_attributes['set_month'])) { $admin_set_month = $ee_attributes['set_month']; }
+
 
 
 	//Check for Multi Event Registration
@@ -100,10 +106,24 @@ if(isset($user_select) && $user_select != 'false') { ?>
       //$modified_date_from = strtotime($modified_date_from);
       //$modified_date_to = strtotime($modified_date_to);
 
+		$thismonth = date('m');
+		$thisyear = date('Y');
 
       foreach ($events as $event){
 
       	$event_start_date	= strtotime($event->start_date);
+		$event_start_date_month = explode('-', $event->start_date);
+
+
+      	//filter by current month
+      	if(isset($admin_currentmonth)) {
+      		if($event_start_date_month['1'] == $admin_currentmonth && $event_start_date_month['0'] == (string)$thisyear) {  } else { continue; }
+      	}
+
+      	//filter by set month only if it is set and current month is not set to true
+      	if(isset($admin_set_month) && !isset($admin_currentmonth)) {
+      		if($event_start_date_month['1'] != $admin_set_month) { continue; }
+      	}
 
       	if(!empty($admin_start_date) && $event_start_date < $admin_start_date) { continue; }
       	if(!empty($admin_end_date) && $event_start_date > $admin_end_date) { continue; }
@@ -297,8 +317,8 @@ function espresso_template_date_range_load_pue_update() {
 	global $org_options, $espresso_check_for_updates;
 	if ( $espresso_check_for_updates == false )
 		return;
-		
-	if (file_exists(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php')) { //include the file 
+
+	if (file_exists(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php')) { //include the file
 		require(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php' );
 		$api_key = $org_options['site_license_key'];
 		$host_server_url = 'http://eventespresso.com';
