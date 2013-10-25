@@ -42,10 +42,6 @@ function espresso_custom_template_date_range(){
 
 	global $this_event_id, $events, $ee_attributes;
 
-	//Extract shortcode attributes, if any.
-	extract($ee_attributes);
-
-
 	if(isset($ee_attributes['user_select'])) { $user_select = $ee_attributes['user_select']; }
 	if(isset($ee_attributes['start_date'])) { $admin_start_date = strtotime($ee_attributes['start_date']); }
 	if(isset($ee_attributes['end_date'])) { $admin_end_date = strtotime($ee_attributes['end_date']); }
@@ -63,42 +59,36 @@ function espresso_custom_template_date_range(){
 	$cart_link 	= '';
 
 
-wp_enqueue_script('jquery-ui-datepicker');
-wp_enqueue_style( 'jquery-ui-datepicker', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css' );
+	wp_enqueue_script('jquery-ui-datepicker');
+	wp_enqueue_style( 'jquery-ui-datepicker', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css' );
 
 ?>
-
 <?php
 //var_dump($_POST);
 ?>
 
 <div id="ee_date_range_wrapper">
-
-<?php
-if(isset($user_select) && $user_select != 'false') { ?>
+	<?php
+	if( !isset($ee_attributes['user_select']) || (isset($ee_attributes['user_select']) && $user_select != 'false')) { ?>
 	<form action="" method="POST" id="ee_daterange_datepickers">
-	<input class="datepicker" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
-	<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
-	<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
+		<input class="datepicker" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
+		<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
+		<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
 	</form>
-<?php } ?>
-
+	<?php 
+	}
+?>
 	<table class="espresso-table" width="100%">
-
-      <thead class="espresso-table-header-row">
-      <tr>
-          <th class="th-group"><?php _e('Course','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('Location','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('City','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('State','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('Date','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('Time','event_espresso'); ?></th>
-          <th class="th-group"><?php _e('','event_espresso'); ?></th>
-     </tr>
-      </thead>
-	<tbody>
-
-      <?php
+		<thead class="espresso-table-header-row">
+			<tr>
+				<th class="th-group"><?php _e('Course','event_espresso'); ?></th>
+				<th class="th-group"><?php _e('Location','event_espresso'); ?></th>
+				<th class="th-group"><?php _e('Date','event_espresso'); ?></th>
+				<th class="th-group"><?php _e('','event_espresso'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
 
       if(isset($_POST['ee_date_from'])) { strtotime($modified_date_from = $_POST['ee_date_from']); }
       if(isset($_POST['ee_date_to'])) { strtotime($modified_date_to = $_POST['ee_date_to']); }
@@ -139,14 +129,9 @@ if(isset($user_select) && $user_select != 'false') { ?>
 		$registration_url 	= !empty($externalURL) ? $externalURL : espresso_reg_url($event->id);
 		//$open_spots			= apply_filters('filter_hook_espresso_get_num_available_spaces', $event->id);
 		$open_spots			= get_number_of_attendees_reg_limit($event->id, 'number_available_spaces');
-		//$live_button 		= $open_spots < 1 || event_espresso_get_status($event->id) == 'NOT_ACTIVE' ? __('Closed', 'event_espresso') : '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
-		if($open_spots < 1) { $live_button = __('Sold Out.'); } elseif (event_espresso_get_status($event->id) == 'NOT_ACTIVE') { $live_button = __('Closed.'); } else { $live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>'; }
-
-		if ($event->allow_overflow == 'Y' && event_espresso_get_status($event->id) == 'ACTIVE'){
-			  $live_button = '<a href="'.espresso_reg_url($event->overflow_event_id).'">'.__('Join Waiting List').'</a>';
-		}
-
-		if ($multi_reg && event_espresso_get_status($event->id) == 'ACTIVE' && empty($externalURL)) {
+		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
+		
+		if ($multi_reg && event_espresso_get_status($event->id) == 'ACTIVE') {
 			$params = array(
 				//REQUIRED, the id of the event that needs to be added to the cart
 				'event_id' => $event->id,
@@ -161,51 +146,32 @@ if(isset($user_select) && $user_select != 'false') { ?>
 
 			$cart_link = event_espresso_cart_link($params);
 		}
-		if($event->allow_overflow == 'Y' && event_espresso_get_status($event->id) == 'ACTIVE' || $open_spots < 1 || event_espresso_get_status($event->id) == 'NOT_ACTIVE') {
-				$params = array(
-				'event_id' => $event->id,
-				'anchor' => __("", 'event_espresso'),
-				'event_name' => $event->event_name,
-				'separator' => __("", 'event_espresso')
-			);
 
-			$cart_link = event_espresso_cart_link($params);
+
+		if($open_spots < 1 && $event->allow_overflow == 'N') {
+			$live_button = __('Sold Out', 'event_espresso');
+			$cart_link = '';
+		} else if ($open_spots < 1 && $event->allow_overflow == 'Y'){
+			$live_button = !empty($event->overflow_event_id) ? '<a href="'.espresso_reg_url($event->overflow_event_id).'">'.__('Join Wait List', 'event_espresso').'</a>' : __('Sold Out', 'event_espresso');
+			$cart_link = '';
 		}
-
-
+		
+		if ($event_status == 'NOT_ACTIVE') { 
+			$live_button = __('Closed', 'event_espresso');
+			$cart_link = '';
+		}
+		
 	   ?>
-      <tr class="espresso-table-row" value="<?php echo $event->start_date; ?>">
-       	<td class="td-group">
-            <?php echo stripslashes_deep($event->event_name) ?>
-          </td>
-          <td class="td-group">
-            <?php echo $event->venue_address ?>
-          </td>
-          <td class="td-group">
-            <?php echo $event->venue_city ?>
-          </td>
-      	  <td class="td-group">
-            <?php echo $event->venue_state ?>
-          </td>
-          <td class="td-group tddate">
-              <?php echo event_date_display($event->start_date, $format = 'l, M d, Y') ?>
-          </td>
-          <td class="td-group">
-              <?php echo espresso_event_time($event->id, 'start_time', get_option('time_format')) ?>
-          </td>
-
-          <td class="td-group">
-              <?php echo event_espresso_get_status($event->id) == 'ACTIVE' ? $live_button .  $cart_link : $live_button; ?>
-          </td>
-      </tr>
-      <?php } //close foreach ?>
-
-
-</tbody>
-</table>
-
+			<tr class="espresso-table-row" value="<?php echo $event->start_date; ?>">
+				<td class="td-group"><?php echo stripslashes_deep($event->event_name) ?></td>
+				<td id="venue_title-<?php echo $event->id?>" class="venue_title"><?php echo $event->venue_name ?></td>
+				<td class="td-group tddate"><?php echo event_date_display($event->start_date.' '.$event->start_time, get_option('date_format').' '.get_option('time_format')) ?></td>
+				<td class="td-group"><?php echo event_espresso_get_status($event->id) == 'ACTIVE' ? $live_button .  $cart_link : $live_button; ?></td>
+			</tr>
+			<?php } //close foreach ?>
+		</tbody>
+	</table>
 </div>
-
 <style>
 
 		#ee_date_from {
@@ -217,9 +183,6 @@ if(isset($user_select) && $user_select != 'false') { ?>
 		}
 
 </style>
-
-
-
 <script>
 
 jQuery(document).ready(function() {
@@ -304,7 +267,6 @@ jQuery('tr.header').each(function(){
 
 });
 </script>
-
 <?php
 }
 
