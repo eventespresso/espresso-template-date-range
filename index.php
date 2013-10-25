@@ -75,7 +75,7 @@ function espresso_custom_template_date_range(){
 		<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
 		<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
 	</form>
-	<?php 
+	<?php
 	}
 ?>
 	<table class="espresso-table" width="100%">
@@ -130,7 +130,7 @@ function espresso_custom_template_date_range(){
 		//$open_spots			= apply_filters('filter_hook_espresso_get_num_available_spaces', $event->id);
 		$open_spots			= get_number_of_attendees_reg_limit($event->id, 'number_available_spaces');
 		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
-		
+
 		if ($multi_reg && event_espresso_get_status($event->id) == 'ACTIVE') {
 			$params = array(
 				//REQUIRED, the id of the event that needs to be added to the cart
@@ -155,12 +155,12 @@ function espresso_custom_template_date_range(){
 			$live_button = !empty($event->overflow_event_id) ? '<a href="'.espresso_reg_url($event->overflow_event_id).'">'.__('Join Wait List', 'event_espresso').'</a>' : __('Sold Out', 'event_espresso');
 			$cart_link = '';
 		}
-		
-		if ($event_status == 'NOT_ACTIVE') { 
+
+		if ($event_status == 'NOT_ACTIVE') {
 			$live_button = __('Closed', 'event_espresso');
 			$cart_link = '';
 		}
-		
+
 	   ?>
 			<tr class="espresso-table-row" value="<?php echo $event->start_date; ?>">
 				<td class="td-group"><?php echo stripslashes_deep($event->event_name) ?></td>
