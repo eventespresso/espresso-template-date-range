@@ -30,6 +30,9 @@
 // user_select=true/false - default is True. If set to false the user will NOT be able to filter the results by date
 // start_date="2013-10-01" - date is in international date format year-month-day so 1st October 1978  = 1978-10-01
 // end_date="2013-10-01" - date is in international date format year-month-day so 1st October 1978  = 1978-10-01
+// current_month="true" - It will display all events for the current month and current year.
+// set_month="10" - numeric, the month of the year, e.g. January = 1, October = 10 -- Please note it will disregard year!!
+
 // by setting the start date events with a start date before that will not appear at all.
 // by setting an end date, events with a start date after that will not appear.
 
@@ -42,6 +45,9 @@ function espresso_custom_template_date_range(){
 	if(isset($ee_attributes['user_select'])) { $user_select = $ee_attributes['user_select']; }
 	if(isset($ee_attributes['start_date'])) { $admin_start_date = strtotime($ee_attributes['start_date']); }
 	if(isset($ee_attributes['end_date'])) { $admin_end_date = strtotime($ee_attributes['end_date']); }
+	if(isset($ee_attributes['current_month'])) { $admin_currentmonth = $ee_attributes['current_month']; }
+	if(isset($ee_attributes['set_month'])) { $admin_set_month = $ee_attributes['set_month']; }
+
 
 
 	//Check for Multi Event Registration
@@ -69,7 +75,7 @@ function espresso_custom_template_date_range(){
 		<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
 		<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
 	</form>
-	<?php 
+	<?php
 	}
 ?>
 	<table class="espresso-table" width="100%">
@@ -90,10 +96,24 @@ function espresso_custom_template_date_range(){
       //$modified_date_from = strtotime($modified_date_from);
       //$modified_date_to = strtotime($modified_date_to);
 
+		$thismonth = date('m');
+		$thisyear = date('Y');
 
       foreach ($events as $event){
 
       	$event_start_date	= strtotime($event->start_date);
+		$event_start_date_month = explode('-', $event->start_date);
+
+
+      	//filter by current month
+      	if(isset($admin_currentmonth)) {
+      		if($event_start_date_month['1'] == $admin_currentmonth && $event_start_date_month['0'] == (string)$thisyear) {  } else { continue; }
+      	}
+
+      	//filter by set month only if it is set and current month is not set to true
+      	if(isset($admin_set_month) && !isset($admin_currentmonth)) {
+      		if($event_start_date_month['1'] != $admin_set_month) { continue; }
+      	}
 
       	if(!empty($admin_start_date) && $event_start_date < $admin_start_date) { continue; }
       	if(!empty($admin_end_date) && $event_start_date > $admin_end_date) { continue; }
@@ -113,6 +133,7 @@ function espresso_custom_template_date_range(){
 			$open_spots		= get_number_of_attendees_reg_limit($event->id, 'number_available_spaces');
 		}
 		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
+
 		$event_status = event_espresso_get_status($event->id);
 		
 		if ($multi_reg && $event_status == 'ACTIVE') {
@@ -139,12 +160,12 @@ function espresso_custom_template_date_range(){
 			$live_button = !empty($event->overflow_event_id) ? '<a href="'.espresso_reg_url($event->overflow_event_id).'">'.__('Join Wait List', 'event_espresso').'</a>' : __('Sold Out', 'event_espresso');
 			$cart_link = '';
 		}
-		
-		if ($event_status == 'NOT_ACTIVE') { 
+
+		if ($event_status == 'NOT_ACTIVE') {
 			$live_button = __('Closed', 'event_espresso');
 			$cart_link = '';
 		}
-		
+
 	   ?>
 			<tr class="espresso-table-row" value="<?php echo $event->start_date; ?>">
 				<td class="td-group"><?php echo stripslashes_deep($event->event_name) ?></td>
@@ -263,8 +284,8 @@ function espresso_template_date_range_load_pue_update() {
 	global $org_options, $espresso_check_for_updates;
 	if ( $espresso_check_for_updates == false )
 		return;
-		
-	if (file_exists(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php')) { //include the file 
+
+	if (file_exists(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php')) { //include the file
 		require(EVENT_ESPRESSO_PLUGINFULLPATH . 'class/pue/pue-client.php' );
 		$api_key = $org_options['site_license_key'];
 		$host_server_url = 'http://eventespresso.com';
