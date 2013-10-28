@@ -127,11 +127,16 @@ function espresso_custom_template_date_range(){
 		$externalURL 		= $event->externalURL;
 		$button_text		= !empty($externalURL) ? $alt_button_text : $button_text;
 		$registration_url 	= !empty($externalURL) ? $externalURL : espresso_reg_url($event->id);
-		//$open_spots			= apply_filters('filter_hook_espresso_get_num_available_spaces', $event->id);
-		$open_spots			= get_number_of_attendees_reg_limit($event->id, 'number_available_spaces');
+		if ( ! has_filter( 'filter_hook_espresso_get_num_available_spaces' ) ){
+			$open_spots		= apply_filters('filter_hook_espresso_get_num_available_spaces', $event->id); //Available in 3.1.37
+		}else{
+			$open_spots		= get_number_of_attendees_reg_limit($event->id, 'number_available_spaces');
+		}
 		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
 
-		if ($multi_reg && event_espresso_get_status($event->id) == 'ACTIVE') {
+		$event_status = event_espresso_get_status($event->id);
+		
+		if ($multi_reg && $event_status == 'ACTIVE') {
 			$params = array(
 				//REQUIRED, the id of the event that needs to be added to the cart
 				'event_id' => $event->id,
