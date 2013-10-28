@@ -106,8 +106,8 @@ function espresso_custom_template_date_range(){
 
 
       	//filter by current month
-      	if(isset($admin_currentmonth)) {
-      		if($event_start_date_month['1'] == $admin_currentmonth && $event_start_date_month['0'] == (string)$thisyear) {  } else { continue; }
+      	if(isset($admin_currentmonth) && $admin_currentmonth == "true") {
+      		if($event_start_date_month['1'] == $thismonth && $event_start_date_month['0'] == (string)$thisyear) {  } else { continue; }
       	}
 
       	//filter by set month only if it is set and current month is not set to true
