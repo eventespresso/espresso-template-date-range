@@ -225,7 +225,7 @@ jQuery("#ee_date_to").change(function(){
 			date_from = Date.parse(jQuery('#date_from_converted').val());
 			date_to = Date.parse(jQuery('#date_to_converted').val());
 
-			console.log(date_from);
+			// console.log(date_from);
 
 			if(date_from == '' && date_to == '') { return; }
 
