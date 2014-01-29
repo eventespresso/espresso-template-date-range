@@ -196,13 +196,13 @@ jQuery(document).ready(function() {
 		if( 0 < jQuery('.datepicker').length ) {
 		    jQuery('#ee_date_from').datepicker({
 		    	altField: "#date_from_converted",
-				altFormat: "yy-m-d",
+				altFormat: "yy/m/d",
 				changeMonth: true,
      			changeYear: true
 		    });
 		    jQuery('#ee_date_to').datepicker({
 		    	altField: "#date_to_converted",
-				altFormat: "yy-m-d",
+				altFormat: "yy/m/d",
 				changeMonth: true,
 				changeYear: true
 		    });
