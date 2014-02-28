@@ -135,7 +135,7 @@ function espresso_custom_template_date_range(){
 		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
 
 		$event_status = event_espresso_get_status($event->id);
-		
+
 		if ($multi_reg && $event_status == 'ACTIVE') {
 			$params = array(
 				//REQUIRED, the id of the event that needs to be added to the cart
@@ -222,25 +222,46 @@ jQuery("#ee_date_to").change(function(){
 		jQuery("#ee_datesubmit").click(function(e) {
 			e.preventDefault();
 
-			date_from = Date.parse(jQuery('#date_from_converted').val());
-			date_to = Date.parse(jQuery('#date_to_converted').val());
+			//alert(jQuery('#date_from_converted').val());
 
+			if(jQuery('#date_from_converted').val() != '') {
+				add_time = jQuery('#date_from_converted').val() + " 00:01:00";
+				date_from = Date.parse(add_time);
+			} else {date_from = '';}
+			if(jQuery('#date_from_converted').val() != '') {
+			add_time2 = jQuery('#date_to_converted').val() + " 23:59:00";
+			date_to = Date.parse(add_time2);
+			} else {date_to = '';}
+			//alert(add_time);
+			//alert(add_time2);
+
+			//date_from = Date.parse(jQuery('#date_from_converted').val());
+			//date_to = Date.parse(jQuery('#date_to_converted').val());
+
+
+
+			console.log(date_from);
+			console.log(date_to);
 			// console.log(date_from);
 
-			if(date_from == '' && date_to == '') { return; }
+			if(date_from.length == 0 && date_to.length == 0) {
+				jQuery('.espresso-table-row').each(function() {
+					jQuery(this).show();
+				});
+			 }
 
 			jQuery('.espresso-table-row').each(function() {
 
 				row_date = Date.parse(jQuery(this).attr('value'));
 
 				if(jQuery(date_from).length > 0 && jQuery(date_to).length == 0) {
-					if(row_date < date_from ) {
+					if(row_date <= date_from ) {
 					jQuery(this).hide();
 					}
 					else { jQuery(this).show(); }
 				}
 				if(jQuery(date_to).length > 0 && jQuery(date_from).length == 0) {
-					if(row_date > date_to ) {
+					if(row_date >= date_to ) {
 					jQuery(this).hide();
 					}
 					else { jQuery(this).show(); }
