@@ -75,7 +75,7 @@ function espresso_custom_template_date_range(){
 	<?php
 	if( !isset($ee_attributes['user_select']) || (isset($ee_attributes['user_select']) && $user_select != 'false')) { ?>
 	<form action="" method="POST" id="ee_daterange_datepickers">
-		<input class="datepicker" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
+		<input class="datepicker small-text" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
 		<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
 		<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
 	</form>
@@ -184,8 +184,10 @@ function espresso_custom_template_date_range(){
 <style>
 
 		#ee_date_from {
+			width: 150px;
 		}
 		#ee_date_to {
+			width: 150px;
 		}
 		#ee_datesubmit {
 			float:right;
@@ -226,33 +228,33 @@ jQuery("#ee_date_to").change(function(){
 		jQuery("#ee_datesubmit").click(function(e) {
 			e.preventDefault();
 
-			//alert(jQuery('#date_from_converted').val());
-
 			if(jQuery('#date_from_converted').val() != '') {
 				add_time = jQuery('#date_from_converted').val() + " 00:01:00";
 				date_from = Date.parse(add_time);
-			} else {date_from = '';}
-			if(jQuery('#date_from_converted').val() != '') {
+			} 
+			else 
+			{date_from = '';}
+
+
+			if(jQuery('#date_to_converted').val() != '') {
 			add_time2 = jQuery('#date_to_converted').val() + " 23:59:00";
 			date_to = Date.parse(add_time2);
-			} else {date_to = '';}
-			//alert(add_time);
-			//alert(add_time2);
-
-			//date_from = Date.parse(jQuery('#date_from_converted').val());
-			//date_to = Date.parse(jQuery('#date_to_converted').val());
-
-
-
-			console.log(date_from);
-			console.log(date_to);
-			// console.log(date_from);
+			} 
+			else 
+			{date_to = '';}
 
 			if(date_from.length == 0 && date_to.length == 0) {
 				jQuery('.espresso-table-row').each(function() {
 					jQuery(this).show();
 				});
 			 }
+
+
+
+if(jQuery(date_to).length == 0) { alert('end date blank'); }
+if(jQuery(date_from).length == 0) { alert('start date blank'); }
+
+
 
 			jQuery('.espresso-table-row').each(function() {
 
