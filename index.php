@@ -201,12 +201,14 @@ jQuery(document).ready(function() {
 
 		if( 0 < jQuery('.datepicker').length ) {
 		    jQuery('#ee_date_from').datepicker({
+		    	dateFormat: 'yy-mm-dd',
 		    	altField: "#date_from_converted",
 				altFormat: "yy/m/d",
 				changeMonth: true,
      			changeYear: true
 		    });
 		    jQuery('#ee_date_to').datepicker({
+		    	dateFormat: 'yy-mm-dd',
 		    	altField: "#date_to_converted",
 				altFormat: "yy/m/d",
 				changeMonth: true,
@@ -248,12 +250,6 @@ jQuery("#ee_date_to").change(function(){
 					jQuery(this).show();
 				});
 			 }
-
-
-
-if(jQuery(date_to).length == 0) { alert('end date blank'); }
-if(jQuery(date_from).length == 0) { alert('start date blank'); }
-
 
 
 			jQuery('.espresso-table-row').each(function() {
