@@ -232,9 +232,7 @@ jQuery("#ee_date_to").change(function(){
 
 			if(jQuery('#date_from_converted').val() != '') {
 				add_time = jQuery('#date_from_converted').val();
-				console.log(add_time);
 				date_from = Date.parse(add_time);//, "Y-m-d");
-				console.log(date_from);
 			} 
 			else 
 			{date_from = '';}
@@ -242,9 +240,7 @@ jQuery("#ee_date_to").change(function(){
 
 			if(jQuery('#date_to_converted').val() != '') {
 				add_time2 = jQuery('#date_to_converted').val();
-				console.log(add_time2);
 				date_to = Date.parse(add_time2);//, "Y-m-d");
-				console.log(date_to);
 			} 
 			else 
 			{date_to = '';}
@@ -259,7 +255,6 @@ jQuery("#ee_date_to").change(function(){
 			jQuery('.espresso-table-row').each(function() {
 				
 				row_date = Date.parse(jQuery(this).attr('value'));
-				console.log(row_date);
 
 				if(jQuery(date_from).length > 0 && jQuery(date_to).length == 0) {
 					if(row_date <= date_from ) {
