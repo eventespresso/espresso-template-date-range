@@ -1,4 +1,8 @@
 <?php
+
+//test 
+
+
 /*
   Plugin Name: Event Espresso Template - Date Range Table
   Plugin URI: http://www.eventespresso.com
@@ -71,7 +75,7 @@ function espresso_custom_template_date_range(){
 	<?php
 	if( !isset($ee_attributes['user_select']) || (isset($ee_attributes['user_select']) && $user_select != 'false')) { ?>
 	<form action="" method="POST" id="ee_daterange_datepickers">
-		<input class="datepicker" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
+		<input class="datepicker small-text" id="ee_date_from" type="text" placeholder="<?php echo _e('Start Date','event_espresso'); ?>" name="ee_date_from">
 		<input class="datepicker" id="ee_date_to" type="text" placeholder="<?php echo _e('End Date','event_espresso'); ?>" name="ee_date_to">
 		<input id="ee_datesubmit" type="submit" name="datesubmit" value="<?php echo _e('Filter Events','event_espresso'); ?>">
 	</form>
@@ -135,7 +139,7 @@ function espresso_custom_template_date_range(){
 		$live_button = '<a id="a_register_link-'.$event->id.'" href="'.$registration_url.'">'.$button_text.'</a>';
 
 		$event_status = event_espresso_get_status($event->id);
-		
+
 		if ($multi_reg && $event_status == 'ACTIVE') {
 			$params = array(
 				//REQUIRED, the id of the event that needs to be added to the cart
@@ -180,8 +184,10 @@ function espresso_custom_template_date_range(){
 <style>
 
 		#ee_date_from {
+			width: 150px;
 		}
 		#ee_date_to {
+			width: 150px;
 		}
 		#ee_datesubmit {
 			float:right;
@@ -195,14 +201,16 @@ jQuery(document).ready(function() {
 
 		if( 0 < jQuery('.datepicker').length ) {
 		    jQuery('#ee_date_from').datepicker({
+		    	dateFormat: 'yy-mm-dd',
 		    	altField: "#date_from_converted",
-				altFormat: "yy/m/d",
+				altFormat: "yy-mm-dd",
 				changeMonth: true,
      			changeYear: true
 		    });
 		    jQuery('#ee_date_to').datepicker({
+		    	dateFormat: 'yy-mm-dd', //yy-mm-dd
 		    	altField: "#date_to_converted",
-				altFormat: "yy/m/d",
+				altFormat: "yy-mm-dd",
 				changeMonth: true,
 				changeYear: true
 		    });
@@ -222,25 +230,40 @@ jQuery("#ee_date_to").change(function(){
 		jQuery("#ee_datesubmit").click(function(e) {
 			e.preventDefault();
 
-			date_from = Date.parse(jQuery('#date_from_converted').val());
-			date_to = Date.parse(jQuery('#date_to_converted').val());
+			if(jQuery('#date_from_converted').val() != '') {
+				add_time = jQuery('#date_from_converted').val();
+				date_from = Date.parse(add_time);//, "Y-m-d");
+			} 
+			else 
+			{date_from = '';}
 
-			// console.log(date_from);
 
-			if(date_from == '' && date_to == '') { return; }
+			if(jQuery('#date_to_converted').val() != '') {
+				add_time2 = jQuery('#date_to_converted').val();
+				date_to = Date.parse(add_time2);//, "Y-m-d");
+			} 
+			else 
+			{date_to = '';}
+
+			if(date_from.length == 0 && date_to.length == 0) {
+				jQuery('.espresso-table-row').each(function() {
+					jQuery(this).show();
+				});
+			 }
+
 
 			jQuery('.espresso-table-row').each(function() {
-
+				
 				row_date = Date.parse(jQuery(this).attr('value'));
 
 				if(jQuery(date_from).length > 0 && jQuery(date_to).length == 0) {
-					if(row_date < date_from ) {
+					if(row_date <= date_from ) {
 					jQuery(this).hide();
 					}
 					else { jQuery(this).show(); }
 				}
 				if(jQuery(date_to).length > 0 && jQuery(date_from).length == 0) {
-					if(row_date > date_to ) {
+					if(row_date >= date_to ) {
 					jQuery(this).hide();
 					}
 					else { jQuery(this).show(); }
@@ -252,6 +275,7 @@ jQuery("#ee_date_to").change(function(){
 					}
 					else { jQuery(this).show(); }
 				}
+
 
 			});
 
