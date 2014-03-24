@@ -203,14 +203,14 @@ jQuery(document).ready(function() {
 		    jQuery('#ee_date_from').datepicker({
 		    	dateFormat: 'yy-mm-dd',
 		    	altField: "#date_from_converted",
-				altFormat: "yy/mm/dd",
+				altFormat: "yy-mm-dd",
 				changeMonth: true,
      			changeYear: true
 		    });
 		    jQuery('#ee_date_to').datepicker({
-		    	dateFormat: 'yy-mm-dd',
+		    	dateFormat: 'yy-mm-dd', //yy-mm-dd
 		    	altField: "#date_to_converted",
-				altFormat: "yy/mm/dd",
+				altFormat: "yy-mm-dd",
 				changeMonth: true,
 				changeYear: true
 		    });
@@ -275,6 +275,7 @@ jQuery("#ee_date_to").change(function(){
 					}
 					else { jQuery(this).show(); }
 				}
+
 
 			});
 
